@@ -50,6 +50,48 @@ func NewKmsParser(c *kmsConfig.KmsConfig) KmsParser {
 	}
 }
 
+func (m *defaultKmsParser) BatchEncrypt(req *kmsTypes.BatchEncryptDataReq) (kmsTypes.BatchEncryptDataResp, error) {
+	result := kmsTypes.BatchEncryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/batchEncrypt", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("BatchEncrypt request error: %v", err)
+		return result, err
+	}
+	logx.Infof("BatchEncrypt response: %s", res)
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("kms sdk errlog: Encrypt fail: %v", result)
+		return result, err
+	}
+	return result, nil
+}
+
+func (m *defaultKmsParser) BatchDecrypt(req *kmsTypes.BatchDecryptDataReq) (kmsTypes.BatchDecryptDataResp, error) {
+	result := kmsTypes.BatchDecryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/batchDecrypt", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("batchDecrypt request error: %v", err)
+		return result, err
+	}
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("batchDecrypt failed: %v", result)
+		return result, err
+	}
+
+	for i, item := range result.Data.List {
+		aesDecryptResult, err := qxCrypto.AESDecryptByGCM(item.Data, m.cli.Config.TransferAesKey, m.cli.Config.TransferAesIv)
+		if err != nil {
+			logx.Errorf("aes decrypt fail: %v", err)
+			return result, err
+		}
+		result.Data.List[i].Data = string(aesDecryptResult)
+	}
+	return result, nil
+}
+
 func (m *defaultKmsParser) Encrypt(req *kmsTypes.EncryptDataReq) (kmsTypes.EncryptDataResp, error) {
 	result := kmsTypes.EncryptDataResp{}
 	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/encrypt", http.MethodPost, req)

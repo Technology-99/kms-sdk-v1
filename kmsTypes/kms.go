@@ -1,5 +1,44 @@
 package kmsTypes
 
+type BatchDecryptDataReq struct {
+	Token string           `form:"token"`
+	Key   string           `json:"key"`
+	Data  []ModelBatchItem `json:"data"`
+}
+
+type BatchDecryptDataResp struct {
+	Code      int32                    `json:"code"`
+	Msg       string                   `json:"msg"`
+	Path      string                   `json:"path"`
+	RequestID string                   `json:"requestId"`
+	Data      ModelBatchAesEncryptData `json:"data"`
+}
+
+type ModelBatchItem struct {
+	Index string `json:"index"`
+	Data  string `json:"data"`
+}
+
+type BatchEncryptDataReq struct {
+	Token string           `form:"token"`
+	Key   string           `json:"key"`
+	Data  []ModelBatchItem `json:"data"`
+}
+
+type ModelBatchAesEncryptData struct {
+	Status string           `json:"status"`
+	Key    string           `json:"key"`
+	List   []ModelBatchItem `json:"list"`
+}
+
+type BatchEncryptDataResp struct {
+	Code      int32                    `json:"code"`
+	Msg       string                   `json:"msg"`
+	Path      string                   `json:"path"`
+	RequestID string                   `json:"requestId"`
+	Data      ModelBatchAesEncryptData `json:"data"`
+}
+
 type BootstrapReq struct {
 }
 
