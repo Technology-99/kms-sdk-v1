@@ -1,0 +1,132 @@
+package kmsParser
+
+import (
+	"context"
+	"encoding/json"
+	"github.com/Technology-99/third_party/qxCrypto"
+	"github.com/Technology-99/third_party/response"
+	"github.com/zeromicro/go-zero/core/logx"
+	"kms-sdk-v1/kmsCli"
+	"kms-sdk-v1/kmsConfig"
+	"kms-sdk-v1/kmsTypes"
+	"net/http"
+)
+
+const (
+	KmsParserStatusNoInit = iota + 1
+	KmsParserStatusInit
+	KmsParserStatusReady
+)
+
+type (
+	KmsParser interface {
+		Status() int
+		WithContext(ctx context.Context) KmsParser
+		CreateAesKey() (*kmsTypes.CreateAesKeyResp, error)
+		Encrypt(req *kmsTypes.EncryptDataReq) (*kmsTypes.EncryptDataResp, error)
+		Decrypt(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error)
+		DecryptUnAutoDecode(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error)
+	}
+	defaultKmsParser struct {
+		cli    *kmsCli.KmsClient
+		status int
+	}
+)
+
+func EasyKmsParser(Token, AesKey, AesIv string) KmsParser {
+	defaultConfig := kmsConfig.DefaultKmsConfig().WithToken(Token).WithTransferAesKey(AesKey).WithTransferAesIv(AesIv)
+	ctx := context.Background()
+	return &defaultKmsParser{
+		cli:    kmsCli.NewKmsClient(ctx, defaultConfig),
+		status: KmsParserStatusNoInit,
+	}
+}
+
+func NewKmsParser(c *kmsConfig.KmsConfig) KmsParser {
+	ctx := context.Background()
+	return &defaultKmsParser{
+		cli:    kmsCli.NewKmsClient(ctx, c),
+		status: KmsParserStatusNoInit,
+	}
+}
+
+func (m *defaultKmsParser) Encrypt(req *kmsTypes.EncryptDataReq) (*kmsTypes.EncryptDataResp, error) {
+	result := kmsTypes.EncryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/encrypt", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("Encrypt request error: %v", err)
+		return nil, err
+	}
+	logx.Infof("Encrypt response: %s", res)
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("kms sdk errlog: Encrypt fail: %v", result)
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (m *defaultKmsParser) Decrypt(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error) {
+	result := kmsTypes.DecryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/decrypt", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("Decrypt request error: %v", err)
+		return nil, err
+	}
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("kms sdk errlog: Decrypt fail: %v", result)
+		return nil, err
+	}
+
+	aesDecryptResult, err := qxCrypto.AESDecryptByGCM(result.Data.Data, m.cli.Config.TransferAesKey, m.cli.Config.TransferAesIv)
+	if err != nil {
+		logx.Errorf("aes decrypt fail: %v", err)
+		return nil, err
+	}
+	result.Data.Data = string(aesDecryptResult)
+	return &result, nil
+}
+
+func (m *defaultKmsParser) DecryptUnAutoDecode(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error) {
+	result := kmsTypes.DecryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/decrypt", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("Decrypt request error: %v", err)
+		return nil, err
+	}
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("kms sdk errlog: Decrypt fail: %v", result)
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (m *defaultKmsParser) CreateAesKey() (*kmsTypes.CreateAesKeyResp, error) {
+	result := kmsTypes.CreateAesKeyResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/createAesKey", http.MethodPost, nil)
+	res, err := reqFn()
+	if err != nil {
+		logx.Errorf("CreateAesKey request error: %v", err)
+		return nil, err
+	}
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		logx.Errorf("kms sdk errlog: CreateAesKey fail: %v", result)
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (m *defaultKmsParser) WithContext(ctx context.Context) KmsParser {
+	m.cli.WithContext(ctx)
+	return m
+}
+
+func (m *defaultKmsParser) Status() int {
+	return m.status
+}
