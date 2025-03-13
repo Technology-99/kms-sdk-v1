@@ -1,8 +1,12 @@
 package kmsTypes
 
+type ModelBatchItem struct {
+	Key  string `json:"key"`
+	Data string `json:"data"`
+}
+
 type BatchDecryptDataReq struct {
-	Key  string            `json:"key"`
-	Data map[string]string `json:"data"`
+	Data map[string]ModelBatchItem `json:"data"`
 }
 
 type BatchDecryptDataResp struct {
@@ -19,9 +23,9 @@ type BatchEncryptDataReq struct {
 }
 
 type ModelBatchAesEncryptData struct {
-	Status string            `json:"status"`
-	Key    string            `json:"key"`
-	Result map[string]string `json:"list"`
+	Status string                    `json:"status"`
+	Key    string                    `json:"key"`
+	Result map[string]ModelBatchItem `json:"list"`
 }
 
 type BatchEncryptDataResp struct {
