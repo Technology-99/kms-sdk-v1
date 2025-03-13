@@ -83,13 +83,13 @@ func (m *defaultKmsParser) BatchDecrypt(req *kmsTypes.BatchDecryptDataReq) (kmsT
 		return result, err
 	}
 
-	for i, item := range result.Data.List {
-		aesDecryptResult, err := qxCrypto.AESDecryptByGCM(item.Data, m.cli.Config.TransferAesKey, m.cli.Config.TransferAesIv)
+	for k, v := range result.Data.Result {
+		aesDecryptResult, err := qxCrypto.AESDecryptByGCM(v, m.cli.Config.TransferAesKey, m.cli.Config.TransferAesIv)
 		if err != nil {
 			log.Printf("aes decrypt fail: %v", err)
 			return result, err
 		}
-		result.Data.List[i].Data = string(aesDecryptResult)
+		result.Data.Result[k] = string(aesDecryptResult)
 	}
 	return result, nil
 }
