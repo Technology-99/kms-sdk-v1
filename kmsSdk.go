@@ -28,6 +28,7 @@ type (
 		Encrypt(req *kmsTypes.EncryptDataReq) (kmsTypes.EncryptDataResp, error)
 		Decrypt(req *kmsTypes.DecryptDataReq) (kmsTypes.DecryptDataResp, error)
 		DecryptUnAutoDecode(req *kmsTypes.DecryptDataReq) (kmsTypes.DecryptDataResp, error)
+		CompareData(req *kmsTypes.CompareAesKeyEncryptDataReq) (kmsTypes.CompareAesKeyEncryptDataResp, error)
 	}
 	defaultKmsParser struct {
 		cli    *kmsCli.KmsClient
