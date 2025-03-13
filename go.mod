@@ -1,8 +1,6 @@
-module kms-sdk-v1
+module github.com/Technology-99/kms-sdk-v1
 
-go 1.23.0
-
-toolchain go1.23.4
+go 1.23.3
 
 require (
 	github.com/Technology-99/third_party v0.1.38

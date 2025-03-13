@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"github.com/Technology-99/kms-sdk-v1/kmsParser"
+	"github.com/Technology-99/kms-sdk-v1/kmsTypes"
 	"github.com/Technology-99/third_party/qxCrypto"
 	"github.com/zeromicro/go-zero/core/logx"
-	"kms-sdk-v1/kmsParser"
-	"kms-sdk-v1/kmsTypes"
 	"log"
 )
 

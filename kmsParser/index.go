@@ -3,12 +3,12 @@ package kmsParser
 import (
 	"context"
 	"encoding/json"
+	"github.com/Technology-99/kms-sdk-v1/kmsCli"
+	"github.com/Technology-99/kms-sdk-v1/kmsConfig"
+	"github.com/Technology-99/kms-sdk-v1/kmsTypes"
 	"github.com/Technology-99/third_party/qxCrypto"
 	"github.com/Technology-99/third_party/response"
 	"github.com/zeromicro/go-zero/core/logx"
-	"kms-sdk-v1/kmsCli"
-	"kms-sdk-v1/kmsConfig"
-	"kms-sdk-v1/kmsTypes"
 	"net/http"
 )
 

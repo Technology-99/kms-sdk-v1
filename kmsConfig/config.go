@@ -1,7 +1,7 @@
 package kmsConfig
 
 import (
-	"kms-sdk-v1/kmsTypes"
+	"github.com/Technology-99/kms-sdk-v1/kmsTypes"
 	"time"
 )
 
