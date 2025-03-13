@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/Technology-99/kms-sdk-v1/kmsParser"
+	kmsSdk "github.com/Technology-99/kms-sdk-v1"
 	"github.com/Technology-99/kms-sdk-v1/kmsTypes"
 	"github.com/Technology-99/third_party/qxCrypto"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -24,7 +24,7 @@ func main() {
 	newCtx := context.Background()
 	newCtx = context.WithValue(newCtx, "requestId", "123456")
 	// note: 创建一对aes密钥串
-	kmsParse := kmsParser.EasyKmsParser(Token, BaseKey, BaseIv)
+	kmsParse := kmsSdk.EasyKmsParser(Token, BaseKey, BaseIv)
 	createDataResult, err := kmsParse.WithContext(newCtx).CreateAesKey()
 	if err != nil {
 		log.Printf("Failed to create data: %v", err)

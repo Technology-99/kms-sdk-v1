@@ -1,4 +1,4 @@
-package kmsParser
+package kmsSdk
 
 import (
 	"context"
