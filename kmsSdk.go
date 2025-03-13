@@ -52,6 +52,23 @@ func NewKmsParser(c *kmsConfig.KmsConfig) KmsParser {
 	}
 }
 
+func (m *defaultKmsParser) CompareData(req *kmsTypes.CompareAesKeyEncryptDataReq) (kmsTypes.CompareAesKeyEncryptDataResp, error) {
+	result := kmsTypes.CompareAesKeyEncryptDataResp{}
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/compareAesKeyEncryptData", http.MethodPost, req)
+	res, err := reqFn()
+	if err != nil {
+		log.Printf("BatchEncrypt request error: %v", err)
+		return result, err
+	}
+	log.Printf("BatchEncrypt response: %s", res)
+	_ = json.Unmarshal(res, &result)
+	if result.Code != response.SUCCESS {
+		log.Printf("kms sdk errlog: Encrypt fail: %v", result)
+		return result, err
+	}
+	return result, nil
+}
+
 func (m *defaultKmsParser) BatchEncrypt(req *kmsTypes.BatchEncryptDataReq) (kmsTypes.BatchEncryptDataResp, error) {
 	result := kmsTypes.BatchEncryptDataResp{}
 	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/batchEncrypt", http.MethodPost, req)

@@ -1,5 +1,25 @@
 package kmsTypes
 
+type CompareAesKeyEncryptDataReq struct {
+	Key1  string `json:"key1"`
+	Data1 string `json:"data1"`
+	Key2  string `json:"key2"`
+	Data2 string `json:"data2"`
+}
+
+type CompareAesKeyEncryptDataResp struct {
+	Code      int32                            `json:"code"`
+	Msg       string                           `json:"msg"`
+	Path      string                           `json:"path"`
+	RequestID string                           `json:"requestId"`
+	Data      CompareAesKeyEncryptDataRespData `json:"data"`
+}
+
+type CompareAesKeyEncryptDataRespData struct {
+	Status      string `json:"status"`
+	CompareData string `json:"compareData"`
+}
+
 type ModelBatchItem struct {
 	Key  string `json:"key"`
 	Data string `json:"data"`
@@ -9,12 +29,18 @@ type BatchDecryptDataReq struct {
 	Data map[string]ModelBatchItem `json:"data"`
 }
 
+type ModelBatchAesDecryptData struct {
+	Status string                    `json:"status"`
+	Key    string                    `json:"key"`
+	Result map[string]ModelBatchItem `json:"list"`
+}
+
 type BatchDecryptDataResp struct {
 	Code      int32                    `json:"code"`
 	Msg       string                   `json:"msg"`
 	Path      string                   `json:"path"`
 	RequestID string                   `json:"requestId"`
-	Data      ModelBatchAesEncryptData `json:"data"`
+	Data      ModelBatchAesDecryptData `json:"data"`
 }
 
 type BatchEncryptDataReq struct {
@@ -23,9 +49,9 @@ type BatchEncryptDataReq struct {
 }
 
 type ModelBatchAesEncryptData struct {
-	Status string                    `json:"status"`
-	Key    string                    `json:"key"`
-	Result map[string]ModelBatchItem `json:"list"`
+	Status string            `json:"status"`
+	Key    string            `json:"key"`
+	Result map[string]string `json:"list"`
 }
 
 type BatchEncryptDataResp struct {
