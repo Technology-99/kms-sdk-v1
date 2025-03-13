@@ -52,7 +52,7 @@ func NewKmsParser(c *kmsConfig.KmsConfig) KmsParser {
 
 func (m *defaultKmsParser) Encrypt(req *kmsTypes.EncryptDataReq) (*kmsTypes.EncryptDataResp, error) {
 	result := kmsTypes.EncryptDataResp{}
-	reqFn := m.cli.EasyNewRequest(context.Background(), "/encrypt", http.MethodPost, req)
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/encrypt", http.MethodPost, req)
 	res, err := reqFn()
 	if err != nil {
 		logx.Errorf("Encrypt request error: %v", err)
@@ -69,7 +69,7 @@ func (m *defaultKmsParser) Encrypt(req *kmsTypes.EncryptDataReq) (*kmsTypes.Encr
 
 func (m *defaultKmsParser) Decrypt(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error) {
 	result := kmsTypes.DecryptDataResp{}
-	reqFn := m.cli.EasyNewRequest(context.Background(), "/decrypt", http.MethodPost, req)
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/decrypt", http.MethodPost, req)
 	res, err := reqFn()
 	if err != nil {
 		logx.Errorf("Decrypt request error: %v", err)
@@ -92,7 +92,7 @@ func (m *defaultKmsParser) Decrypt(req *kmsTypes.DecryptDataReq) (*kmsTypes.Decr
 
 func (m *defaultKmsParser) DecryptUnAutoDecode(req *kmsTypes.DecryptDataReq) (*kmsTypes.DecryptDataResp, error) {
 	result := kmsTypes.DecryptDataResp{}
-	reqFn := m.cli.EasyNewRequest(context.Background(), "/decrypt", http.MethodPost, req)
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/decrypt", http.MethodPost, req)
 	res, err := reqFn()
 	if err != nil {
 		logx.Errorf("Decrypt request error: %v", err)
@@ -108,7 +108,7 @@ func (m *defaultKmsParser) DecryptUnAutoDecode(req *kmsTypes.DecryptDataReq) (*k
 
 func (m *defaultKmsParser) CreateAesKey() (*kmsTypes.CreateAesKeyResp, error) {
 	result := kmsTypes.CreateAesKeyResp{}
-	reqFn := m.cli.EasyNewRequest(context.Background(), "/createAesKey", http.MethodPost, nil)
+	reqFn := m.cli.EasyNewRequest(context.Background(), "/aesGcm/createAesKey", http.MethodPost, nil)
 	res, err := reqFn()
 	if err != nil {
 		logx.Errorf("CreateAesKey request error: %v", err)
